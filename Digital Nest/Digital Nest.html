@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Digital Nest</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body { font-family: Arial; background:#f9f9f9; margin:20px; }
+h1{text-align:center;}
+.controls{text-align:center;margin-bottom:20px;}
+input,button{padding:8px;margin:5px;border-radius:6px;}
+#catalog{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:15px;}
+.item{background:#fff;padding:10px;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,.2);position:relative;text-align:center;}
+.item img{max-width:100%;height:150px;object-fit:cover;border-radius:6px}
+.stockOverlay{
+position:absolute;inset:0;background:rgba(255,0,0,.85);
+color:#fff;font-size:22px;font-weight:bold;
+display:flex;justify-content:center;align-items:center;
+border-radius:8px;
+}
+.adminOnly{display:none;}
+</style>
+</head>
+<body>
+
+<h1>Digital Nest (Online)</h1>
+
+<div class="controls adminOnly">
+<input type="file" id="photo">
+<input id="name" placeholder="Item">
+<input id="price" placeholder="Price">
+<input id="qty" type="number" placeholder="Qty">
+<button onclick="addItem()">Add</button>
+</div>
+
+<div id="catalog"></div>
+
+<script>
+const isAdmin = location.search.includes("admin=1");
+document.querySelectorAll(".adminOnly").forEach(e=>e.style.display=isAdmin?"block":"none");
+
+let items = [];
+const catalog = document.getElementById("catalog");
+
+// WebSocket to server
+const ws = new WebSocket(`ws://${location.hostname}:3000`);
+ws.onmessage = e => {
+  items = JSON.parse(e.data);
+  render();
+};
+
+// Load from server
+fetch("/api/catalog").then(r=>r.json()).then(d=>{items=d;render();});
+
+// Save to server (Admin only)
+function save() {
+  if(!isAdmin) return;
+  fetch("/api/catalog",{
+    method:"POST",
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(items)
+  });
+}
+
+// Add new item (Admin only)
+function addItem(){
+  const f=document.getElementById("photo").files[0];
+  const n=name.value.trim();
+  if(!f||!n) return alert("Fill all fields");
+  const r=new FileReader();
+  r.onload=()=>{
+    items.push({photo:r.result,name:n,price:price.value,qty:+qty.value});
+    save();
+  };
+  r.readAsDataURL(f);
+}
+
+// Render catalog
+function render(){
+  catalog.innerHTML="";
+  items.forEach((it,i)=>{
+    const d=document.createElement("div");
+    d.className="item";
+    d.innerHTML=`
+      <img src="${it.photo}">
+      <h3>${it.name}</h3>
+      <p>Price: ${it.price}</p>
+      <p>Qty: ${it.qty}</p>
+    `;
+    if(isAdmin){
+      const b=document.createElement("button");
+      b.textContent="Stock Out";
+      b.onclick=()=>{it.qty=0;save();}
+      d.appendChild(b);
+    }
+    if(it.qty<=0){
+      const o=document.createElement("div");
+      o.className="stockOverlay";
+      o.textContent="STOCK OUT";
+      d.appendChild(o);
+    }
+    catalog.appendChild(d);
+  });
+}
+</script>
+</body>
+</html>
