@@ -20,7 +20,7 @@ button { padding: 8px; }
 <button onclick="sendMsg()">Send</button>
 
 <script>
-const ws = new WebSocket("ws://localhost:8080");
+const ws = new WebSocket("ws://192.168.1.40:8080");
 const chat = document.getElementById("chat");
 
 ws.onmessage = e => {
@@ -37,3 +37,4 @@ function sendMsg() {
 
 </body>
 </html>
+
