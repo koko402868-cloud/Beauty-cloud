@@ -1,40 +1,358 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Simple Chat</title>
-<style>
-body { font-family: Arial; background: #f4f4f4; padding: 20px; }
-#chat { height: 300px; overflow-y: auto; background: #fff; padding: 10px; }
-input { width: 80%; padding: 8px; }
-button { padding: 8px; }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Electronics Catalog Online</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f9f9f9; margin: 20px; }
+    h1 { text-align: center; }
+    .controls { margin-bottom: 20px; text-align: center; }
+    input, button {
+      padding: 8px; margin: 5px; border-radius: 6px; border: 1px solid #ccc;
+    }
+    #addBtn { background: green; color: white; cursor: pointer; }
+    #clearBtn { background: red; color: white; cursor: pointer; }
+    #exportBtn { background: purple; color: white; cursor: pointer; }
+    #importBtn { background: teal; color: white; cursor: pointer; }
+    #catalog {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px;
+    }
+    .item {
+      background: white; padding: 10px; border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2); text-align: center; position: relative;
+    }
+    .item img { max-width: 100%; height: 150px; object-fit: cover; border-radius: 6px; cursor: pointer; }
+    .stockOverlay {
+      position: absolute; top: 0; left: 0; right:0; bottom:0;
+      background: rgba(255,0,0,0.85); color: white; font-size: 24px; font-weight: bold;
+      display: flex; flex-direction: column; justify-content: center; align-items: center; border-radius: 8px;
+    }
+    .fullscreen {
+      display: none; position: fixed; top:0; left:0; right:0; bottom:0;
+      background: rgba(0,0,0,0.8); justify-content: center; align-items: center;
+    }
+    .fullscreen img { max-width: 90%; max-height: 90%; border: 5px solid white; border-radius: 8px; }
+
+    /* Button colors */
+    .deleteBtn { background: crimson; color: white; margin-top: 8px; cursor: pointer; border: none; border-radius: 6px; padding: 6px 12px; }
+    .editBtn { background: orange; color: white; margin-top: 8px; cursor: pointer; border: none; border-radius: 6px; padding: 6px 12px; }
+    .okBtn { background: green; color: white; margin: 5px; border: none; border-radius: 6px; padding: 6px 12px; cursor: pointer; }
+    .cancelBtn { background: blue; color: white; margin: 5px; border: none; border-radius: 6px; padding: 6px 12px; cursor: pointer; }
+    .confirmBox, .msgBox {
+      margin-top: 10px; padding: 15px; background: #fff; border: 2px solid #444; border-radius: 8px; text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    .yesBtn { background: red; color: white; margin: 5px; padding: 6px 12px; border-radius: 6px; cursor: pointer; border:none; }
+    .noBtn { background: green; color: white; margin: 5px; padding: 6px 12px; border-radius: 6px; cursor: pointer; border:none; }
+    .okStockBtn { background: green; color: white; margin: 5px; padding: 6px 12px; border-radius: 6px; cursor: pointer; border:none; }
+    .noStockBtn { background: orange; color: white; margin: 5px; padding: 6px 12px; border-radius: 6px; cursor: pointer; border:none; }
+    #preview { display: block; margin: 10px auto; max-width: 200px; border: 2px solid #ccc; border-radius: 6px; }
+
+    /* Message box at top */
+    #msgContainer {
+      position: fixed;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 9999;
+    }
+  </style>
 </head>
 <body>
 
-<h2>💬 Simple Web Chat</h2>
+<h1> Digital Nest (Online)</h1>
 
-<div id="chat"></div><br>
+<div class="controls">
+  <input type="file" id="photoInput" accept="image/*"><br>
+  <img id="preview" src="" style="display:none;">
+  <input type="text" id="nameInput" placeholder="Item Name">
+  <input type="text" id="priceInput" placeholder="Price (eg: 5000 Ks or $25)">
+  <input type="number" id="qtyInput" placeholder="Quantity" min="0">
+  <button id="addBtn">Add Item</button>
+  <input type="text" id="searchBar" placeholder="Search items...">
+  <button id="clearBtn">Clean All Data</button>
+  <button id="exportBtn">Export Data</button>
+  <input type="file" id="importFile" style="display:none;">
+  <button id="importBtn">Import Data</button>
+</div>
 
-<input id="msg" placeholder="Type message">
-<button onclick="sendMsg()">Send</button>
+<div id="catalog"></div>
+
+<!-- Fullscreen image -->
+<div id="fullscreen" class="fullscreen" onclick="this.style.display='none'">
+  <img id="fullImg" src="">
+</div>
+
+<!-- Message box -->
+<div id="msgContainer"></div>
 
 <script>
-const ws = new WebSocket("ws://192.168.1.40:8080");
-const chat = document.getElementById("chat");
+  let items = JSON.parse(localStorage.getItem("catalog")) || [];
+  const catalog = document.getElementById("catalog");
+  const searchBar = document.getElementById("searchBar");
+  const msgContainer = document.getElementById("msgContainer");
 
-ws.onmessage = e => {
-  chat.innerHTML += "<div>📩 " + e.data + "</div>";
-  chat.scrollTop = chat.scrollHeight;
-};
+  function showMsg(message, color="blue") {
+    msgContainer.innerHTML = "";
+    const box = document.createElement("div");
+    box.className = "msgBox";
+    box.style.borderColor = color;
+    const text = document.createElement("p");
+    text.textContent = message;
+    const btn = document.createElement("button");
+    btn.textContent = "OK";
+    btn.style.background = color;
+    btn.style.color = "white";
+    btn.onclick = () => msgContainer.innerHTML = "";
+    box.appendChild(text);
+    box.appendChild(btn);
+    msgContainer.appendChild(box);
+  }
 
-function sendMsg() {
-  const msg = document.getElementById("msg");
-  ws.send(msg.value);
-  msg.value = "";
-}
+  document.getElementById("photoInput").onchange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        document.getElementById("preview").src = reader.result;
+        document.getElementById("preview").style.display = "block";
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  function render() {
+    catalog.innerHTML = "";
+    items.forEach((item, index) => {
+      if (!item.name.toLowerCase().includes(searchBar.value.toLowerCase())) return;
+
+      const div = document.createElement("div");
+      div.className = "item";
+
+      const img = document.createElement("img");
+      img.src = item.photo;
+      img.onclick = () => {
+        document.getElementById("fullImg").src = item.photo;
+        document.getElementById("fullscreen").style.display = "flex";
+      };
+
+      const name = document.createElement("h3");
+      name.textContent = item.name;
+
+      const price = document.createElement("p");
+      price.textContent = "Price: " + item.price;
+
+      const qty = document.createElement("p");
+      qty.textContent = "Quantity: " + item.qty;
+
+      const stockBtn = document.createElement("button");
+      stockBtn.textContent = "Stock Out";
+      stockBtn.style.background = "brown";
+      stockBtn.style.color = "white";
+      stockBtn.onclick = () => { item.qty = 0; save(); };
+
+      const editBtn = document.createElement("button");
+      editBtn.className = "editBtn";
+      editBtn.textContent = "Edit";
+      editBtn.onclick = () => {
+        div.querySelectorAll("p, button.deleteBtn, button.editBtn").forEach(el => el.style.display="none");
+
+        const qtyInput = document.createElement("input");
+        qtyInput.type = "number";
+        qtyInput.value = item.qty;
+
+        const priceInput = document.createElement("input");
+        priceInput.type = "text";
+        priceInput.value = item.price;
+
+        const okBtn = document.createElement("button");
+        okBtn.className = "okBtn";
+        okBtn.textContent = "OK";
+        okBtn.onclick = () => {
+          item.qty = parseInt(qtyInput.value);
+          item.price = priceInput.value;
+          save();
+        };
+
+        const cancelBtn = document.createElement("button");
+        cancelBtn.className = "cancelBtn";
+        cancelBtn.textContent = "Cancel";
+        cancelBtn.onclick = () => render();
+
+        div.appendChild(qtyInput);
+        div.appendChild(priceInput);
+        div.appendChild(okBtn);
+        div.appendChild(cancelBtn);
+      };
+
+      const delBtn = document.createElement("button");
+      delBtn.className = "deleteBtn";
+      delBtn.textContent = "Delete";
+      delBtn.onclick = () => {
+        const confirmBox = document.createElement("div");
+        confirmBox.className = "confirmBox";
+        confirmBox.innerHTML = `<p>Delete ${item.name} ?</p>`;
+
+        const yesBtn = document.createElement("button");
+        yesBtn.className = "yesBtn";
+        yesBtn.textContent = "YES";
+        yesBtn.onclick = () => { items.splice(index, 1); save(); };
+
+        const noBtn = document.createElement("button");
+        noBtn.className = "noBtn";
+        noBtn.textContent = "NO";
+        noBtn.onclick = () => render();
+
+        confirmBox.appendChild(yesBtn);
+        confirmBox.appendChild(noBtn);
+        div.appendChild(confirmBox);
+      };
+
+      div.appendChild(img);
+      div.appendChild(name);
+      div.appendChild(price);
+      div.appendChild(qty);
+      div.appendChild(stockBtn);
+      div.appendChild(editBtn);
+      div.appendChild(delBtn);
+
+      if (item.qty <= 0) {
+        const overlay = document.createElement("div");
+        overlay.className = "stockOverlay";
+
+        const text = document.createElement("div");
+        text.textContent = "STOCK OUT";
+
+        const inBtn = document.createElement("button");
+        inBtn.textContent = "In Stock";
+        inBtn.style.background = "green";
+        inBtn.onclick = (e) => {
+          e.stopPropagation();
+          const inputBox = document.createElement("div");
+          inputBox.innerHTML = `<p>Enter new quantity for ${item.name}</p>`;
+          const qtyInput = document.createElement("input");
+          qtyInput.type = "number";
+          qtyInput.value = 1;
+
+          const okStockBtn = document.createElement("button");
+          okStockBtn.className = "okStockBtn";
+          okStockBtn.textContent = "OK";
+          okStockBtn.onclick = () => { item.qty = parseInt(qtyInput.value); save(); };
+
+          const noStockBtn = document.createElement("button");
+          noStockBtn.className = "noStockBtn";
+          noStockBtn.textContent = "NO";
+          noStockBtn.onclick = () => render();
+
+          inputBox.appendChild(qtyInput);
+          inputBox.appendChild(okStockBtn);
+          inputBox.appendChild(noStockBtn);
+          overlay.appendChild(inputBox);
+        };
+
+        overlay.appendChild(text);
+        overlay.appendChild(inBtn);
+        div.appendChild(overlay);
+      }
+
+      catalog.appendChild(div);
+    });
+  }
+
+  function save() {
+    localStorage.setItem("catalog", JSON.stringify(items));
+    render();
+  }
+
+  // ADD ITEM
+  document.getElementById("addBtn").onclick = () => {
+    const file = document.getElementById("photoInput").files[0];
+    const name = document.getElementById("nameInput").value.trim();
+    const price = document.getElementById("priceInput").value;
+    const qty = parseInt(document.getElementById("qtyInput").value) || 0;
+
+    if (!file || !name || !price) return showMsg("Please fill all fields!", "red");
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      items.push({ photo: reader.result, name, price, qty });
+      save();
+      resetInputs();
+    };
+    reader.readAsDataURL(file);
+  };
+
+  function resetInputs() {
+    document.getElementById("photoInput").value = "";
+    document.getElementById("preview").style.display = "none";
+    document.getElementById("nameInput").value = "";
+    document.getElementById("priceInput").value = "";
+    document.getElementById("qtyInput").value = "";
+  }
+
+  // Clean All Data
+  document.getElementById("clearBtn").onclick = () => {
+    const confirmBox = document.createElement("div");
+    confirmBox.className = "confirmBox";
+    confirmBox.innerHTML = `<p>Clear ALL data ?</p>`;
+
+    const yesBtn = document.createElement("button");
+    yesBtn.className = "yesBtn";
+    yesBtn.textContent = "YES";
+    yesBtn.onclick = () => { items = []; save(); confirmBox.remove(); };
+
+    const noBtn = document.createElement("button");
+    noBtn.className = "noBtn";
+    noBtn.textContent = "NO";
+    noBtn.onclick = () => confirmBox.remove();
+
+    confirmBox.appendChild(yesBtn);
+    confirmBox.appendChild(noBtn);
+    msgContainer.appendChild(confirmBox);
+  };
+
+  searchBar.oninput = render;
+
+  // Export
+  document.getElementById("exportBtn").onclick = () => {
+    const dataStr = JSON.stringify(items, null, 2);
+    const blob = new Blob([dataStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "catalog.json";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  };
+
+  // Import
+  document.getElementById("importBtn").onclick = () => {
+    document.getElementById("importFile").click();
+  };
+  document.getElementById("importFile").onchange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const data = JSON.parse(event.target.result);
+          if (Array.isArray(data)) {
+            data.forEach(newItem => items.push(newItem));
+            save();
+          } else {
+            showMsg("Invalid file format!", "red");
+          }
+        } catch (err) {
+          showMsg("Error reading file!", "red");
+        }
+      };
+      reader.readAsText(file);
+    }
+  };
+
+  render();
 </script>
-
 </body>
 </html>
-
