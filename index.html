@@ -1,56 +1,72 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>My Business Shop</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<title>Camera Capture Website</title>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #111;
+  color: #fff;
+  text-align: center;
+  padding: 20px;
+}
+
+video, canvas {
+  width: 320px;
+  border: 2px solid #00ff99;
+  border-radius: 8px;
+  margin-top: 10px;
+}
+
+button {
+  margin: 10px;
+  padding: 10px 20px;
+  font-size: 16px;
+  background: #00ff99;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #00cc77;
+}
+</style>
 </head>
+
 <body>
 
-<header>
-  <h1>My Business Shop</h1>
-  <p>Quality Products | Best Price</p>
-</header>
+<h2>📷 Camera Capture Website</h2>
 
-<nav>
-  <a href="#products">Products</a>
-  <a href="#contact">Contact</a>
-</nav>
+<video id="video" autoplay></video>
+<br>
+<button onclick="startCamera()">Start Camera</button>
+<button onclick="takePhoto()">Take Photo</button>
 
-<section id="products">
-  <h2>Our Products</h2>
+<br>
+<canvas id="canvas" width="320" height="240"></canvas>
 
-  <div class="product-list">
+<script>
+let video = document.getElementById("video");
+let canvas = document.getElementById("canvas");
+let ctx = canvas.getContext("2d");
 
+function startCamera() {
+  navigator.mediaDevices.getUserMedia({ video: true })
+    .then(stream => {
+      video.srcObject = stream;
+    })
+    .catch(err => {
+      alert("Camera access denied!");
+    });
+}
 
-<div class="product">
-  <img src="images/product1.jpg" alt="Product 1">
-  <h3>Product One</h3>
-  <p>Price: 25,000 MMK</p>
-  <button>Buy Now</button>
-</div>
-
-<div class="product">
-  <img src="images/product2.jpg" alt="Product 2">
-  <h3>Product Two</h3>
-  <p>Price: 40,000 MMK</p>
-  <button>Buy Now</button>
-</div>
-
-  </div>
-</section>
-
-<section id="contact">
-  <h2>Contact Us</h2>
-  <p>📞 Phone: 09-XXXXXXXXX</p>
-  <p>📧 Email: mybusiness@gmail.com</p>
-  <p>📍 Location: Myanmar</p>
-</section>
-
-<footer>
-  <p>© 2026 My Business Shop</p>
-</footer>
+function takePhoto() {
+  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+}
+</script>
 
 </body>
 </html>
