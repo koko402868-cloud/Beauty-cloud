@@ -40,5 +40,5 @@ app.post("/api/upload", upload.single("photo"), (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Server running on http://192.168.1.40:${PORT}`);
 });
