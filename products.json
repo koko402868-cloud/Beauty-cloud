@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1,
+    "name": "Smart Phone",
+    "price": "350,000 Ks",
+    "image": "images/phone.jpg",
+    "description": "Android 12, 6GB RAM"
+  },
+  {
+    "id": 2,
+    "name": "Laptop",
+    "price": "1,200,000 Ks",
+    "image": "images/laptop.jpg",
+    "description": "Intel i5, 8GB RAM"
+  }
+]
