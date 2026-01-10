@@ -1,0 +1,7 @@
+body { font-family: Arial; background:#f4f4f4; margin:20px; }
+h1 { text-align:center; }
+#catalog { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:15px; }
+.item { background:white; padding:10px; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,.2); text-align:center; position:relative; }
+.item img { width:100%; height:150px; object-fit:cover; border-radius:6px; }
+.stockOut { position:absolute; inset:0; background:rgba(255,0,0,.85); color:white; font-size:22px; display:flex; justify-content:center; align-items:center; border-radius:8px; }
+#adminPanel input, #adminPanel button { margin:5px; padding:5px; }
