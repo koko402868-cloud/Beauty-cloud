@@ -1,0 +1,14 @@
+[
+  {
+    "name": "Arduino UNO",
+    "price": "25000 Ks",
+    "qty": 5,
+    "photo": "https://i.imgur.com/9Xn3KQK.jpg"
+  },
+  {
+    "name": "OLED Display",
+    "price": "18000 Ks",
+    "qty": 0,
+    "photo": "https://i.imgur.com/LxKqF3b.jpg"
+  }
+]
