@@ -2,188 +2,50 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Digital Nest - Catalog</title>
-
+<title>Digital Nest</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-body { font-family: Arial; background:#f5f5f5; margin:20px; }
-h1 { text-align:center; }
-
-#adminBar { text-align:center; margin-bottom:15px; }
-button { padding:7px 12px; border-radius:6px; border:none; cursor:pointer; }
-.adminOnly { display:none; }
-
-#catalog {
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
-  gap:15px;
-}
-
-.item {
-  background:white;
-  padding:10px;
-  border-radius:8px;
-  box-shadow:0 2px 6px rgba(0,0,0,.2);
-  text-align:center;
-  position:relative;
-}
-
-.item img {
-  width:100%;
-  height:150px;
-  object-fit:cover;
-  border-radius:6px;
-}
-
-.stockOut {
-  position:absolute;
-  inset:0;
-  background:rgba(255,0,0,.85);
-  color:white;
-  font-size:24px;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  border-radius:8px;
+body{font-family:Arial;background:#f9f9f9;margin:20px}
+h1{text-align:center}
+#catalog{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:15px}
+.item{background:#fff;padding:10px;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,.2);position:relative;text-align:center}
+.item img{max-width:100%;height:150px;object-fit:cover;border-radius:6px}
+.stockOverlay{
+position:absolute;inset:0;background:rgba(255,0,0,.85);
+color:#fff;font-size:22px;font-weight:bold;
+display:flex;justify-content:center;align-items:center;
+border-radius:8px;
 }
 </style>
 </head>
-
 <body>
 
 <h1>Digital Nest (Online)</h1>
-
-<div id="adminBar">
-  <button id="loginBtn">Admin Login</button>
-  <button id="logoutBtn" style="display:none;background:red;color:white;">Logout</button>
-</div>
-
-<!-- ADMIN CONTROLS -->
-<div id="adminControls" class="adminOnly" style="text-align:center;">
-  <input type="file" id="photo">
-  <input type="text" id="name" placeholder="Item Name">
-  <input type="text" id="price" placeholder="Price">
-  <input type="number" id="qty" placeholder="Qty">
-  <button onclick="addItem()" style="background:green;color:white;">Add Item</button>
-</div>
-
-<br>
 <div id="catalog"></div>
 
 <script>
-const ADMIN_PASSWORD = "admin123";
-let isAdmin = false;
-
-let items = JSON.parse(localStorage.getItem("catalog")) || [];
-
-const catalog = document.getElementById("catalog");
-const adminControls = document.getElementById("adminControls");
-const loginBtn = document.getElementById("loginBtn");
-const logoutBtn = document.getElementById("logoutBtn");
-
-loginBtn.onclick = () => {
-  const pass = prompt("Enter Admin Password:");
-  if (pass === ADMIN_PASSWORD) {
-    isAdmin = true;
-    adminControls.style.display = "block";
-    document.querySelectorAll(".adminOnly").forEach(e=>e.style.display="block");
-    loginBtn.style.display="none";
-    logoutBtn.style.display="inline-block";
-    render();
-  } else {
-    alert("Wrong Password!");
-  }
-};
-
-logoutBtn.onclick = () => {
-  isAdmin = false;
-  adminControls.style.display = "none";
-  document.querySelectorAll(".adminOnly").forEach(e=>e.style.display="none");
-  loginBtn.style.display="inline-block";
-  logoutBtn.style.display="none";
-  render();
-};
-
-function save() {
-  localStorage.setItem("catalog", JSON.stringify(items));
-  render();
-}
-
-function render() {
-  catalog.innerHTML = "";
-  items.forEach((item,i)=>{
-    const div = document.createElement("div");
-    div.className="item";
-
-    div.innerHTML = `
-      <img src="${item.photo}">
-      <h3>${item.name}</h3>
-      <p>Price: ${item.price}</p>
-      <p>Qty: ${item.qty}</p>
+fetch("catalog.json")
+.then(r=>r.json())
+.then(items=>{
+  const catalog=document.getElementById("catalog");
+  items.forEach(it=>{
+    const d=document.createElement("div");
+    d.className="item";
+    d.innerHTML=`
+      <img src="${it.photo}">
+      <h3>${it.name}</h3>
+      <p>Price: ${it.price}</p>
+      <p>Qty: ${it.qty}</p>
     `;
-
-    if (item.qty<=0) {
-      const s = document.createElement("div");
-      s.className="stockOut";
-      s.textContent="STOCK OUT";
-      div.appendChild(s);
+    if(it.qty<=0){
+      const o=document.createElement("div");
+      o.className="stockOverlay";
+      o.textContent="STOCK OUT";
+      d.appendChild(o);
     }
-
-    if (isAdmin) {
-      const p = document.createElement("input");
-      p.value=item.price;
-
-      const q = document.createElement("input");
-      q.type="number";
-      q.value=item.qty;
-
-      const ok = document.createElement("button");
-      ok.textContent="Save";
-      ok.style.background="orange";
-      ok.onclick=()=>{
-        item.price=p.value;
-        item.qty=parseInt(q.value);
-        save();
-      };
-
-      const del = document.createElement("button");
-      del.textContent="Delete";
-      del.style.background="crimson";
-      del.style.color="white";
-      del.onclick=()=>{
-        if(confirm("Delete item?")){
-          items.splice(i,1);
-          save();
-        }
-      };
-
-      div.append(p,q,ok,del);
-    }
-
-    catalog.appendChild(div);
+    catalog.appendChild(d);
   });
-}
-
-function addItem() {
-  const f = photo.files[0];
-  if(!f || !name.value || !price.value) return alert("Fill all fields");
-
-  const r = new FileReader();
-  r.onload=()=>{
-    items.push({
-      photo:r.result,
-      name:name.value,
-      price:price.value,
-      qty:parseInt(qty.value)||0
-    });
-    save();
-    name.value=price.value=qty.value="";
-    photo.value="";
-  };
-  r.readAsDataURL(f);
-}
-
-render();
+});
 </script>
 
 </body>
