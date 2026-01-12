@@ -3,21 +3,21 @@
     "id": 1,
     "name": "Arduino uno R3",
     "price": "42000 Ks",
-    "image": "images/phone.jpg",
+    "image": "images/330px-ArdurinoUno.jpg",
     "description": " "
   },
   {
     "id": 2,
     "name": "Pin header",
     "price": "500 Ks",
-    "image": "images/laptop.jpg",
+    "image": "images/61WauuremnL._UF1000,1000_QL80_.jpg",
     "description": "Intel i5, 8GB RAM"
   }
   {
     "id": 3,
     "name": "LCD 16 x 16 ",
     "price": "1,200,0 Ks",
-    "image": "images/s-l400.jpg",
+    "image": "images/741-IC-General-Purpose-Op-Amp.jpg",
     "description": "Liquid crystal display"
   }
 ]
