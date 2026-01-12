@@ -15,10 +15,17 @@
 
 <div id="products"></div>
 
-<!-- FULL SCREEN IMAGE VIEW -->
-<div id="fullscreen" onclick="closeFull()">
-  <span id="closeBtn">✕</span>
-  <img id="fullImg">
+<!-- FULL SCREEN OVERLAY -->
+<div id="productOverlay">
+  <span id="closeOverlay">✕</span>
+  <div class="overlay-content">
+    <img id="overlayImg">
+    <div class="overlay-info">
+      <h2 id="overlayName"></h2>
+      <p id="overlayDesc"></p>
+      <p class="price" id="overlayPrice"></p>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -32,32 +39,43 @@ fetch("products.json")
       card.className = "card";
 
       card.innerHTML = `
-        <img src="${item.image}" alt="${item.name}"
-             onclick="openFull('${item.image}')">
+        <img src="${item.image}" alt="${item.name}" onclick="openOverlay(${item.id})">
         <div class="info">
           <h3>${item.name}</h3>
-          <p>${item.description}</p>
           <p class="price">${item.price}</p>
         </div>
       `;
 
       container.appendChild(card);
     });
+
+    // Store data globally for overlay access
+    window.productsData = data;
   })
   .catch(() => {
     document.getElementById("products").innerHTML = "Failed to load data";
   });
 
-/* OPEN FULL SCREEN */
-function openFull(src) {
-  const fs = document.getElementById("fullscreen");
-  document.getElementById("fullImg").src = src;
-  fs.style.display = "flex";
+function openOverlay(id) {
+  const product = window.productsData.find(p => p.id === id);
+  if(!product) return;
+
+  document.getElementById("overlayImg").src = product.image;
+  document.getElementById("overlayName").innerText = product.name;
+  document.getElementById("overlayDesc").innerText = product.description;
+  document.getElementById("overlayPrice").innerText = product.price;
+
+  document.getElementById("productOverlay").style.display = "flex";
 }
 
-/* CLOSE FULL SCREEN */
-function closeFull() {
-  document.getElementById("fullscreen").style.display = "none";
+document.getElementById("closeOverlay").onclick = function(e) {
+  e.stopPropagation(); // prevent parent click
+  document.getElementById("productOverlay").style.display = "none";
+}
+
+// Close overlay if background clicked
+document.getElementById("productOverlay").onclick = function(e) {
+  if(e.target === this) this.style.display = "none";
 }
 </script>
 
