@@ -15,11 +15,10 @@
 
 <div id="products"></div>
 
-<!-- Image Modal -->
-<div id="imgModal" class="modal">
-  <span class="close">&times;</span>
-  <img class="modal-content" id="modalImg">
-  <div id="caption"></div>
+<!-- FULL SCREEN IMAGE VIEW -->
+<div id="fullscreen" onclick="closeFull()">
+  <span id="closeBtn">✕</span>
+  <img id="fullImg">
 </div>
 
 <script>
@@ -34,7 +33,7 @@ fetch("products.json")
 
       card.innerHTML = `
         <img src="${item.image}" alt="${item.name}"
-             onclick="openImage('${item.image}', '${item.name}')">
+             onclick="openFull('${item.image}')">
         <div class="info">
           <h3>${item.name}</h3>
           <p>${item.description}</p>
@@ -45,21 +44,21 @@ fetch("products.json")
       container.appendChild(card);
     });
   })
-  .catch(err => {
+  .catch(() => {
     document.getElementById("products").innerHTML = "Failed to load data";
   });
 
-/* Image open function */
-function openImage(src, name) {
-  document.getElementById("imgModal").style.display = "block";
-  document.getElementById("modalImg").src = src;
-  document.getElementById("caption").innerText = name;
+/* OPEN FULL SCREEN */
+function openFull(src) {
+  const fs = document.getElementById("fullscreen");
+  document.getElementById("fullImg").src = src;
+  fs.style.display = "flex";
 }
 
-/* Close modal */
-document.querySelector(".close").onclick = function () {
-  document.getElementById("imgModal").style.display = "none";
-};
+/* CLOSE FULL SCREEN */
+function closeFull() {
+  document.getElementById("fullscreen").style.display = "none";
+}
 </script>
 
 </body>
