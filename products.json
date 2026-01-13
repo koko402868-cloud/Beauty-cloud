@@ -4,8 +4,8 @@
     "name": "Arduino Uno R3",
     "price": "42,000 Ks",
     "image": "images/Arduino Uno Board.png",
-    "description": "DIY project prototyping ,Developing varied varieties of projects that require code-based control,Automation system development,Learning AVR programming,Entry-level circuit designing,Micro-controller : ATmega328,Operating Voltage : 5V,Input Voltage (recommended) : 7–12V,Digital I/O Pins : 14 (6 PWM outputs),Analog Input Pins : 6",
-    "stock": 5
+   "description": "DIY project prototyping, Developing code-based control projects, Automation system development, Learning AVR programming, Entry-level circuit designing, Micro-controller: ATmega328, Operating Voltage: 5V, Input Voltage: 7–12V, Digital I/O Pins: 14 (6 PWM), Analog Input Pins: 6",
+  "stock": 5
   },
   {
     "id": 2,
