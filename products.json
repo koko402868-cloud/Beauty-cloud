@@ -4,23 +4,24 @@
     "name": "Arduino Uno R3",
     "price": "42,000 Ks",
     "image": "images/330px-ArdurinoUno.jpg",
-    "description": "Original Arduino Uno R3 board",
-    "stock": 5
-  },
-  {
-    "id": 2,
-    "name": "Pin Header",
-    "price": "500 Ks",
-    "image": "images/61WauuremnL._UF1000,1000_QL80_.jpg",
-    "description": "Male pin header for PCB",
-    "stock": 0
-  },
-  {
-    "id": 3,
-    "name": "LCD 16x2",
-    "price": "12,000 Ks",
-    "image": "images/741-IC-General-Purpose-Op-Amp.jpg",
-    "description": "16x2 character LCD display",
-    "stock": 3
+    "stock": 5,
+
+    "shortDescription": "Popular microcontroller board for beginners and professionals",
+
+    "features": [
+      "DIY project prototyping",
+      "Developing code-based control projects",
+      "Automation system development",
+      "Learning AVR programming",
+      "Entry-level circuit designing"
+    ],
+
+    "specifications": {
+      "Micro-controller": "ATmega328",
+      "Operating Voltage": "5V",
+      "Input Voltage (recommended)": "7–12V",
+      "Digital I/O Pins": "14 (6 PWM outputs)",
+      "Analog Input Pins": "6"
+    }
   }
 ]
