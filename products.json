@@ -1,26 +1,26 @@
 [
   {
     "id": 1,
-    "name": "Arduino uno R3",
+    "name": "Arduino Uno R3",
     "price": "42,000 Ks",
     "image": "images/330px-ArdurinoUno.jpg",
-    "description": "Microcontroller board based on ATmega328P. Perfect for beginners.",
+    "description": "Original Arduino Uno R3 board",
     "stock": 5
   },
   {
     "id": 2,
-    "name": "Pin header",
+    "name": "Pin Header",
     "price": "500 Ks",
     "image": "images/61WauuremnL._UF1000,1000_QL80_.jpg",
-    "description": "Used for connecting wires and modules.",
+    "description": "Male pin header for PCB",
     "stock": 0
   },
   {
     "id": 3,
-    "name": "LCD 16 x 16",
-    "price": "1,200 Ks",
+    "name": "LCD 16x2",
+    "price": "12,000 Ks",
     "image": "images/741-IC-General-Purpose-Op-Amp.jpg",
-    "description": "Liquid crystal display for electronics projects.",
-    "stock": 8
+    "description": "16x2 character LCD display",
+    "stock": 3
   }
 ]
