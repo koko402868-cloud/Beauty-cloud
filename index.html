@@ -16,71 +16,74 @@
 <div id="products"></div>
 
 <!-- PRODUCT DETAIL OVERLAY -->
-<div id="productOverlay">
-  <span id="closeOverlay">✕</span>
+<div id="overlay">
+  <div class="overlay-box">
+    <span class="close" onclick="closeOverlay()">✕</span>
 
-  <div class="overlay-content">
-    <img id="overlayImg">
-    <div class="overlay-info">
-      <h2 id="overlayName"></h2>
-      <p id="overlayDesc"></p>
-      <p class="price" id="overlayPrice"></p>
-    </div>
+    <img id="oImg">
+    <h2 id="oName"></h2>
+    <p id="oDesc"></p>
+    <p id="oPrice"></p>
+    <p id="oStock"></p>
+
+    <button id="buyBtn">Buy Now</button>
   </div>
 </div>
 
 <script>
+let products = [];
+
 fetch("products.json")
   .then(res => res.json())
   .then(data => {
+    products = data;
     const container = document.getElementById("products");
-    window.productsData = data;
 
     data.forEach(item => {
       const card = document.createElement("div");
       card.className = "card";
-
-      if (item.stock === 0) {
-        card.classList.add("out-stock");
-      }
+      if (item.stock === 0) card.classList.add("out-stock");
 
       card.innerHTML = `
         ${item.stock === 0 ? `<div class="stock-label">OUT OF STOCK</div>` : ""}
-        <img src="${item.image}" alt="${item.name}"
-             ${item.stock === 0 ? "" : `onclick="openOverlay(${item.id})"`}>
+        <img src="${item.image}" onclick="openOverlay(${item.id})">
         <div class="info">
           <h3>${item.name}</h3>
           <p class="price">${item.price}</p>
         </div>
       `;
-
       container.appendChild(card);
     });
-  })
-  .catch(() => {
-    document.getElementById("products").innerHTML = "Failed to load data";
   });
 
 function openOverlay(id) {
-  const product = window.productsData.find(p => p.id === id);
-  if (!product) return;
+  const item = products.find(p => p.id === id);
 
-  document.getElementById("overlayImg").src = product.image;
-  document.getElementById("overlayName").innerText = product.name;
-  document.getElementById("overlayDesc").innerText = product.description;
-  document.getElementById("overlayPrice").innerText = product.price;
+  document.getElementById("overlay").style.display = "flex";
+  document.getElementById("oImg").src = item.image;
+  document.getElementById("oName").innerText = item.name;
+  document.getElementById("oDesc").innerText = item.description;
+  document.getElementById("oPrice").innerText = "Price: " + item.price;
 
-  document.getElementById("productOverlay").style.display = "flex";
+  const stockText = document.getElementById("oStock");
+  const buyBtn = document.getElementById("buyBtn");
+
+  if (item.stock === 0) {
+    stockText.innerText = "Status: OUT OF STOCK";
+    stockText.style.color = "red";
+    buyBtn.disabled = true;
+    buyBtn.innerText = "Unavailable";
+  } else {
+    stockText.innerText = "In Stock";
+    stockText.style.color = "green";
+    buyBtn.disabled = false;
+    buyBtn.innerText = "Buy Now";
+  }
 }
 
-document.getElementById("closeOverlay").onclick = function (e) {
-  e.stopPropagation();
-  document.getElementById("productOverlay").style.display = "none";
-};
-
-document.getElementById("productOverlay").onclick = function (e) {
-  if (e.target === this) this.style.display = "none";
-};
+function closeOverlay() {
+  document.getElementById("overlay").style.display = "none";
+}
 </script>
 
 </body>
