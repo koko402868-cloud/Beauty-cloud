@@ -4,15 +4,15 @@
     "name": "Arduino Uno R3",
     "price": "42,000 Ks",
     "image": "images/Arduino Uno Board.png",
-   "description": "DIY project prototyping, Developing code-based control projects, Automation system development, Learning AVR programming, Entry-level circuit designing, Micro-controller: ATmega328, Operating Voltage: 5V, Input Voltage: 7–12V, Digital I/O Pins: 14 (6 PWM), Analog Input Pins: 6",
-  "stock": 2
+    "description": "DIY project prototyping, code-based control projects, Automation system development, Learning AVR programming, Entry-level circuit designing, Micro-controller: ATmega328, Operating Voltage: 5V, Input Voltage: 7–12V, Digital I/O Pins: 14 (6 PWM), Analog Input Pins: 6",
+    "stock": 2
   },
   {
     "id": 2,
     "name": "Color Yellow LED(5mm)",
     "price": "150 Ks",
     "image": "images/LED Yellow 5mm .jpg",
-    "description": " ",
+    "description": "",
     "stock": 0
   },
   {
