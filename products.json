@@ -5,22 +5,22 @@
     "price": "42,000 Ks",
     "image": "images/Arduino Uno Board.png",
    "description": "DIY project prototyping, Developing code-based control projects, Automation system development, Learning AVR programming, Entry-level circuit designing, Micro-controller: ATmega328, Operating Voltage: 5V, Input Voltage: 7–12V, Digital I/O Pins: 14 (6 PWM), Analog Input Pins: 6",
-  "stock": 5
+  "stock": 2
   },
   {
     "id": 2,
-    "name": "Pin Header",
-    "price": "500 Ks",
-    "image": "images/61WauuremnL._UF1000,1000_QL80_.jpg",
-    "description": "Male pin header for PCB",
-    "stock": 0
+    "name": "Color Yellow LED(5mm)",
+    "price": "150 Ks",
+    "image": "images/LED Yellow 5mm .jpg",
+    "description": " ",
+    "stock": 100
   },
   {
     "id": 3,
-    "name": "LCD 16x2",
+    "name": "SG90 Servo Motor 180 Degree",
     "price": "12,000 Ks",
-    "image": "images/741-IC-General-Purpose-Op-Amp.jpg",
-    "description": "16x2 character LCD display",
-    "stock": 3
+    "image": "images/SG-90 Servo Motor 180 Degree.png",
+    "description": "For Robotic and other motion machine can use",
+    "stock": 5
   }
 ]
