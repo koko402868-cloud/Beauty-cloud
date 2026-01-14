@@ -50,7 +50,6 @@ header {
   width: 100%;
   height: 180px;
   object-fit: cover;
-  cursor: pointer;
 }
 
 .card .info {
@@ -68,12 +67,7 @@ header {
   font-size: 18px;
 }
 
-/* OUT OF STOCK */
-.out-stock {
-  opacity: 0.6;
-  border: 2px solid red;
-}
-
+/* STOCK LABEL */
 .stock-label {
   position: absolute;
   top: 10px;
@@ -84,6 +78,11 @@ header {
   font-size: 12px;
   font-weight: bold;
   border-radius: 5px;
+}
+
+/* LOW STOCK */
+.low-stock {
+  background: orange !important;
 }
 
 /* OVERLAY */
@@ -129,26 +128,4 @@ header {
   color: red;
   font-size: 28px;
   cursor: pointer;
-}
-
-/* BUY BUTTON */
-#buyBtn {
-  margin-top: 12px;
-  padding: 10px;
-  width: 100%;
-  background: green;
-  color: white;
-  border: none;
-  font-size: 16px;
-  cursor: pointer;
-  border-radius: 6px;
-}
-
-#buyBtn:hover {
-  background: #0a8a0a;
-}
-
-#buyBtn:disabled {
-  background: gray;
-  cursor: not-allowed;
 }
