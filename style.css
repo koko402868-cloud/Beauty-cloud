@@ -79,10 +79,13 @@ header {
   font-weight: bold;
   border-radius: 5px;
 }
-
 /* LOW STOCK */
 .low-stock {
-  background: orange !important;
+  background: orange; 
+  color: white;
+  font-weight: bold;
+}
+
 }
 
 /* OVERLAY */
@@ -129,3 +132,4 @@ header {
   font-size: 28px;
   cursor: pointer;
 }
+
