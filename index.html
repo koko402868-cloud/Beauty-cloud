@@ -17,7 +17,6 @@
     type="text"
     id="searchInput"
     placeholder="Search products..."
-    style="margin-top:10px; padding:8px; width:250px;"
     onkeyup="searchProducts()"
   >
 </header>
@@ -34,105 +33,9 @@
     <p id="oDesc"></p>
     <p id="oPrice"></p>
     <p id="oStock"></p>
-
-    <button id="buyBtn">Buy Now</button>
   </div>
 </div>
 
-<script>
-let products = [];
-let currentProduct = null;
-
-/* LOAD PRODUCTS */
-fetch("products.json")
-  .then(res => res.json())
-  .then(data => {
-    products = data;
-    renderProducts(products);
-  });
-
-/* RENDER PRODUCTS */
-function renderProducts(list) {
-  const container = document.getElementById("products");
-  container.innerHTML = "";
-
-  list.forEach(item => {
-    const card = document.createElement("div");
-    card.className = "card";
-    if (item.stock === 0) card.classList.add("out-stock");
-
-    card.innerHTML = `
-      ${item.stock === 0 ? `<div class="stock-label">OUT OF STOCK</div>` : ""}
-      <img src="${item.image}" onclick="openOverlay(${item.id})">
-      <div class="info">
-        <h3>${item.name}</h3>
-        <p class="price">${item.price}</p>
-      </div>
-    `;
-    container.appendChild(card);
-  });
-}
-
-/* SEARCH */
-function searchProducts() {
-  const text = document.getElementById("searchInput").value.toLowerCase();
-  const filtered = products.filter(p =>
-    p.name.toLowerCase().includes(text)
-  );
-  renderProducts(filtered);
-}
-
-/* OPEN OVERLAY */
-function openOverlay(id) {
-  const item = products.find(p => p.id === id);
-  currentProduct = item;
-
-  document.getElementById("overlay").style.display = "flex";
-  document.getElementById("oImg").src = item.image;
-  document.getElementById("oName").innerText = item.name;
-  document.getElementById("oDesc").innerText = item.description;
-  document.getElementById("oPrice").innerText = "Price: " + item.price;
-
-  const stockText = document.getElementById("oStock");
-  const buyBtn = document.getElementById("buyBtn");
-
-  if (item.stock === 0) {
-    stockText.innerText = "Status: OUT OF STOCK";
-    stockText.style.color = "red";
-    buyBtn.disabled = true;
-    buyBtn.innerText = "Unavailable";
-  } else {
-    stockText.innerText = "In Stock";
-    stockText.style.color = "green";
-    buyBtn.disabled = false;
-    buyBtn.innerText = "Buy Now";
-    buyBtn.onclick = placeOrder;
-  }
-}
-
-/* PLACE ORDER */
-function placeOrder() {
-  let orders = JSON.parse(localStorage.getItem("orders")) || [];
-
-  orders.push({
-    id: currentProduct.id,
-    name: currentProduct.name,
-    price: currentProduct.price,
-    time: new Date().toLocaleString()
-  });
-
-  localStorage.setItem("orders", JSON.stringify(orders));
-
-  alert("✅ Order placed successfully!");
-  closeOverlay();
-}
-
-/* CLOSE OVERLAY */
-function closeOverlay() {
-  document.getElementById("overlay").style.display = "none";
-}
-</script>
-
+<script src="script.js"></script>
 </body>
 </html>
-
