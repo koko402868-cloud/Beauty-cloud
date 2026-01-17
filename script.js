@@ -7,7 +7,6 @@ fetch("products.json")
     products = data;
     renderProducts(products);
   });
-
 /* RENDER PRODUCTS */
 function renderProducts(list) {
   const container = document.getElementById("products");
